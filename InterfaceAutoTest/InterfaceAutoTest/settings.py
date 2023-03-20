@@ -148,3 +148,10 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/login/'
 
 redis_port = 6379
+
+# celery允许接收的数据格式，可以是一个字符串，比如'json'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
+# 异步任务的序列化器，也可以是json
+CELERY_TASK_SERIALIZER = 'pickle'
+# 任务结果的数据格式，也可以是json
+CELERY_RESULT_SERIALIZER = 'pickle'

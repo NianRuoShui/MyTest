@@ -143,6 +143,7 @@ class CaseSuiteExecuteRecord(models.Model):
     execute_start_time = models.CharField('执行开始时间', max_length=300, blank=True, null=True)
 
 
+
 # 用例集合下的用例执行记录
 class CaseSuiteTestCaseExecuteRecord(models.Model):
     id = models.AutoField(primary_key=True)

@@ -9,6 +9,7 @@ from . import models
 from .task import case_task, suite_task
 
 
+
 # 封装分页处理
 def get_paginator(request, data):
     paginator = Paginator(data, 10)  # 默认每页展示10条数据
@@ -86,9 +87,6 @@ def test_case(request):
             test_case_id_list.sort()
             print("test_case_id_list: {}".format(test_case_id_list))
             print("获取到用例，开始用例执行")
-            # 普通执行
-            # case_task(test_case_id_list, server_address)
-            # celery 执行
             case_task.apply_async((test_case_id_list, server_address))
         else:
             print("运行测试用例失败")
@@ -145,13 +143,18 @@ def case_suite(request):
                 test_suite = models.CaseSuite.objects.get(id=int(suite_id))
                 print("所需执行的用例集合: {}".format(test_suite))
                 username = request.user.username
+
                 test_suite_record = models.CaseSuiteExecuteRecord.objects.create(case_suite=test_suite,
                                                                                run_time_interval=count_down_time,
                                                                                creator=username)
-                # 普通执行
-                # suite_task(test_suite_record, test_suite, server_address)
-                # celery 执行
+                # test_suite_record = test_suite_record.__dict__
+                # print(test_suite_record)
+                #
+                # json_test_suite_record = json.dumps(test_suite_record, skipkeys=True, ensure_ascii=False)
+                # print(json_test_suite_record)
+
                 suite_task.apply_async((test_suite_record, test_suite, server_address), countdown=count_down_time)
+
         else:
             print("运行测试集合用例失败")
             return HttpResponse("运行的测试集合为空，请选择测试集合后再运行！")
@@ -367,9 +370,12 @@ def login(request):
                     return redirect('/')
                 else:
                     message = "用户名不存在或者密码不正确！"
+                    return render(request, 'login.html', locals())
             except:
                 traceback.print_exc()
                 message = "登录程序出现异常"
+                return render(request, 'login.html', locals())
+
         # 用户名或密码为空，返回登录页和错误提示信息
         else:
             return render(request, 'login.html', locals())
